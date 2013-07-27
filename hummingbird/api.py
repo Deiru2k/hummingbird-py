@@ -32,7 +32,7 @@ class Api(object):
     def __init__(self, mashape_key):
         
         """
-        mashape_key - Your mashape key. 
+        :mashape_key: - Your mashape key. 
         Make sure that your key is allowed to query hummingbird
         If your key is invalid, raises AuthException
         """
@@ -57,6 +57,9 @@ class Api(object):
                 raise AuthException(self.headers['X-Mashape-Authorization'])
     
     def __query(self, path, method, params=None):
+        
+        if not params:
+            params = {}
         
         """
         Internal method used to simplify requests.
@@ -102,7 +105,7 @@ class Api(object):
         path = '/anime/' + anime_id
         return Anime(self.__query(path, 'GET'), self)
     
-    def get_library(self, user_id, status, page=None):
+    def get_library(self, user_id='me', status='currently-watching', page=None):
         
         """
         Fetches library info for given user.
@@ -114,6 +117,8 @@ class Api(object):
         
         params = dict()
         params['status'] = status
+        if user_id == 'me':
+            params['auth_token'] = self.user_key
         if page:
             params['page'] = page
         path = '/users/' + user_id + "/library/"
