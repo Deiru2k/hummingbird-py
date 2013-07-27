@@ -2,6 +2,7 @@ import urllib
 import urllib2
 import json
 
+from hummingbird.models import *
 
 class AuthException(Exception):
     
@@ -13,8 +14,10 @@ class AuthException(Exception):
     """
     
     def __init__(self, key):
-        Exception.__init__(self, "Invalid Mashape Key. Please check if your key is valid or if it is allowed to query Hummingbird API.")
+        Exception.__init__(self, "Invalid Mashape Key. Please check if your key is valid or if it is allowed to query\
+         Hummingbird API.")
         self.api_key = key
+
 
 class Api(object):
     
@@ -34,9 +37,8 @@ class Api(object):
         If your key is invalid, raises AuthException
         """
         
-        self.headers['X-Mashape-Authorization']=mashape_key
-        if not self.__test_key():
-            raise AuthException(mashape_key)
+        self.headers['X-Mashape-Authorization'] = mashape_key
+        self.__test_key()
     
     def __test_key(self):
         
@@ -46,14 +48,15 @@ class Api(object):
         
         req = urllib2.Request(self.api_url+'/anime/', headers=self.headers)
         try:
-            response = urllib2.urlopen(req)
+            urllib2.urlopen(req)
         except urllib2.HTTPError, e:
             if e.code == 404:
                 return True
             elif e.code == 403:
-                return False
+                print e.read()
+                raise AuthException(self.headers['X-Mashape-Authorization'])
     
-    def __query(self, path, method, params={}):
+    def __query(self, path, method, params=None):
         
         """
         Internal method used to simplify requests.
@@ -84,7 +87,8 @@ class Api(object):
         
         path = '/users/authenticate'
         params = {'email': email, 'password': password}
-        return self.__query(path, 'POST', params).strip('"')
+        self.user_key = self.__query(path, 'POST', params).strip('"')
+        return self.user_key
     
     def get_anime(self, anime_id):
         
@@ -96,7 +100,7 @@ class Api(object):
         """
         
         path = '/anime/' + anime_id
-        return  self.__query(path, 'GET')
+        return Anime(self.__query(path, 'GET'), self)
     
     def get_library(self, user_id, status, page=None):
         
@@ -108,18 +112,17 @@ class Api(object):
         think of some way to get user_id.
         """
         
-        params = {}
+        params = dict()
         params['status'] = status
         if page:
             params['page'] = page
         path = '/users/' + user_id + "/library/"
-        return self.__query(path, 'GET', params)
+        return Library(self.__query(path, 'GET', params), self)
     
-    def update_library(self, anime_id, user_key=None, **params):
+    def update_library(self, anime_id, **params):
         
         """
         Updates user's library.
-        user_key is user's auth token which you can obtaion by calling
         Api.authenticate.
         Possible params are:
             privacy - [private\public] Wut?
@@ -129,11 +132,8 @@ class Api(object):
             episodes_watched - [number] Number of episodes watched
             increment_episodes - [bool] Wheter or not to increment episodes count with this update
         """
-        
-        if not user_key:
-            user_key == self.user_key
-        
-        params['auth_token'] = user_key
+
+        params['auth_token'] = self.user_key
         path = '/libraries/' + anime_id
         
         return self.__query(path, 'POST', params)
