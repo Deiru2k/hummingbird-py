@@ -111,8 +111,9 @@ class Api(object):
         Fetches library info for given user.
         status parameter represents the section of library you want to fetch.
         Status can be: currently-watching, on-hold, dropped, completed, plan-to-watch
-        And yeah, there's no way to search for users either, so you'll have to
-        think of some way to get user_id.
+        There's still no way of getting other user's id, but if you have an authed user, you can 
+        use "me" as user_id to fetch the library of current user.
+        Returns a list of Entry objects.
         """
         
         params = dict()
