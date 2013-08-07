@@ -1,5 +1,10 @@
 __author__ = 'Alex'
 
+"""
+Contains various Api related objects.
+Right now, functionality is very bare, but more will be added as Hummingbird\
+api grows.
+"""
 
 class Anime(object):
     
@@ -22,6 +27,9 @@ class Anime(object):
         """
         
         self.api.update_library(self.slug, **params)
+        
+    def __str__(self):
+        return self.title
 
 
 class Entry(object):
@@ -40,7 +48,7 @@ class Entry(object):
         self.__dict__.update(entry_dict)
         self.api = api
         self.anime = Anime(anime_dict, api)
-        
+
 def Library(entries_list, api):
     entries = []
     for entry_dict in entries_list:

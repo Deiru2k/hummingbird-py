@@ -104,6 +104,23 @@ class Api(object):
         
         path = '/anime/' + anime_id
         return Anime(self.__query(path, 'GET'), self)
+        
+    def search_anime(self, *query):
+        
+        """
+        Search hummingbird for anime.
+        :query: - Query string, i.e. "steins;gate" or "fullmetal" or "cowboy be"
+        Returns an array of Anime
+        """
+        
+        path = "/search/anime"
+        response = self.__query(path, 'GET', {"query": query})
+        
+        results = []
+        for anime in response:
+            results.append(Anime(anime, self))
+        
+        return results
     
     def get_library(self, user_id='me', status='currently-watching', page=None):
         
