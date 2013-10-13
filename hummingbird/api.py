@@ -26,6 +26,8 @@ class Api(object):
     __init__ takes your mashape key as it's only agrument
     """
     
+    
+    auth_token = ''
     headers = {}
     api_url = 'https://hummingbirdv1.p.mashape.com'
     
@@ -91,7 +93,9 @@ class Api(object):
         path = '/users/authenticate'
         params = {'email': email, 'password': password}
         self.user_key = self.__query(path, 'POST', params).strip('"')
-        return self.user_key
+        global auth_token
+        auth_token = self.user_key
+        return auth_token
     
     def get_anime(self, anime_id):
         
@@ -156,8 +160,13 @@ class Api(object):
             episodes_watched - [number] Number of episodes watched
             increment_episodes - [bool] Wheter or not to increment episodes count with this update
         """
+        
+        global auth_token
+        if not user_key:
+            user_key == auth_token
+        
         anime_id = anime_id.replace(" ", "-").lower()
-        params['auth_token'] = self.user_key
+        params['auth_token'] = auth_token
         path = '/libraries/' + anime_id
         
         return self.__query(path, 'POST', params)
