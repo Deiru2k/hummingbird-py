@@ -102,6 +102,7 @@ class Api(object):
         to get the ID.
         """
         
+        anime_id = anime_id.replace(" ", "-").lower()
         path = '/anime/' + anime_id
         return Anime(self.__query(path, 'GET'), self)
         
@@ -155,7 +156,7 @@ class Api(object):
             episodes_watched - [number] Number of episodes watched
             increment_episodes - [bool] Wheter or not to increment episodes count with this update
         """
-
+        anime_id = anime_id.replace(" ", "-").lower()
         params['auth_token'] = self.user_key
         path = '/libraries/' + anime_id
         
