@@ -106,6 +106,15 @@ class Api(object):
         path = '/anime/' + anime_id
         return Anime(self.__query(path, 'GET'), self)
         
+    def get_user(self, user_id):
+        
+        """
+        Retrives data on specificed user.
+        """
+
+        path = '/users/' + user_id
+        return self.__query(path, 'GET')
+        
     def search_anime(self, *query):
         
         """
