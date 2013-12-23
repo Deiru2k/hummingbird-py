@@ -118,6 +118,18 @@ class Api(object):
 
         path = '/users/' + user_id
         return self.__query(path, 'GET')
+    
+    def get_feed(self, user_id="me", page=1):
+    
+        """
+        Gets the activity feed of the user. Well. The JSON data with a crap load of
+        keys o-o
+        """
+        
+        path = '/users/' +user_id+ '/feed.json'
+        params = {'page':str(page)}
+        
+        return self.__query(path, 'GET', params)
         
     def search_anime(self, *query):
         
